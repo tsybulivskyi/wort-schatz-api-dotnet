@@ -1,0 +1,6 @@
+@wort_schart_api_dotnet_HostAddress = http://localhost:5256
+
+GET {{wort_schart_api_dotnet_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

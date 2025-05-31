@@ -1,0 +1,36 @@
+# .gitignore for .NET/Visual Studio/Entity Framework projects
+
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Visual Studio Code
+.vscode/
+
+# Entity Framework Migrations
+[Mm]igrations/*Designer.cs
+[Mm]igrations/*Snapshot.cs
+
+# Logs
+*.log
+
+# Others
+*.swp
+*.tmp
+*.bak
+*.ncrunch*
+_ReSharper*/
+
+# Sensitive configuration
+appsettings.*.json
+!appsettings.json
