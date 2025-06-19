@@ -1,4 +1,8 @@
+using FirebaseAdmin;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using WordTranslationApp;
 using WordTranslationApp.Models;
 
@@ -8,11 +12,21 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+
 builder.Services.AddDbContext<WortSchatzDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<WordRepository>();
 builder.Services.AddScoped<TagRepository>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = builder.Configuration["jwt:Issuer"];
+        options.Audience = builder.Configuration["jwt:Audience"];
+    });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -23,7 +37,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.MapGet("/words", async (WordRepository repo) =>
 {
     var words = await repo.GetAllAsync();
@@ -35,7 +48,7 @@ app.MapGet("/words", async (WordRepository repo) =>
         Tags = w.Tags.Select(t => t.Name).ToArray()
     });
     return Results.Ok(wordDtos);
-});
+}).RequireAuthorization();
 
 app.MapPost("/words", async (WordDto wordDto, WordRepository repo) =>
 {
@@ -43,7 +56,7 @@ app.MapPost("/words", async (WordDto wordDto, WordRepository repo) =>
 
     await repo.AddAsync(word);
     return Results.Created($"/words/{word.Id}", word);
-});
+}).RequireAuthorization();
 
 app.MapDelete("/words", async (WordRepository repo) =>
 {
