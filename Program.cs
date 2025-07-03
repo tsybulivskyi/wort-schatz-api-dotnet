@@ -1,6 +1,9 @@
 using FirebaseAdmin;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using WordTranslationApp;
 using WordTranslationApp.Models;
 
@@ -8,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 
@@ -26,6 +30,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddHealthChecks()
+    .AddCheck<SampleHealthCheck>("Sample");
 
 var app = builder.Build();
 
@@ -36,33 +42,20 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.MapHealthChecks("/healthz");
-app.MapGet("/words", async (WordRepository repo) =>
-{
-    var words = await repo.GetAllAsync();
-    var wordDtos = words.Select(w => new WordDto
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Map controllers
+app.MapControllers();
+
+//services.AddHealthChecksUI();
+app.MapHealthChecks(
+    "/health",
+    new HealthCheckOptions
     {
-        Id = w.Id,
-        Original = w.Original,
-        Translation = w.Translation,
-        Tags = w.Tags.Select(t => t.Name).ToArray()
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
     });
-    return Results.Ok(wordDtos);
-}).RequireAuthorization();
 
-app.MapPost("/words", async (WordDto wordDto, WordRepository repo) =>
-{
-    var word = Word.FromDto(wordDto);
-
-    await repo.AddAsync(word);
-    return Results.Created($"/words/{word.Id}", word);
-}).RequireAuthorization();
-
-app.MapDelete("/words", async (WordRepository repo) =>
-{
-    await repo.DeleteAllAsync();
-    return Results.NoContent();
-});
 
 // Seed test data
 using (var scope = app.Services.CreateScope())
