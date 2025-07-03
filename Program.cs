@@ -1,8 +1,6 @@
 using FirebaseAdmin;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using WordTranslationApp;
 using WordTranslationApp.Models;
 
@@ -11,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddHealthChecks();
 
 
 builder.Services.AddDbContext<WortSchatzDbContext>(options =>
@@ -37,6 +36,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapHealthChecks("/healthz");
 app.MapGet("/words", async (WordRepository repo) =>
 {
     var words = await repo.GetAllAsync();
@@ -82,7 +82,3 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
