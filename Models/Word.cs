@@ -3,9 +3,9 @@ namespace WordTranslationApp.Models;
 public record Word
 {
     public int Id { get; set; } // EF Core primary key
-    public string Original { get; set; }
-    public string Translation { get; set; }
-    public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+    public required string Original { get; set; }
+    public required string Translation { get; set; }
+    public required ICollection<Tag> Tags { get; set; } = [];
 
     public static Word FromDto(WordDto dto)
     {
