@@ -34,3 +34,5 @@ _ReSharper*/
 # Sensitive configuration
 appsettings.*.json
 !appsettings.json
+
+*.http

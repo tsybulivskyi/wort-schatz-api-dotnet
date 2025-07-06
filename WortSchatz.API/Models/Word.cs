@@ -17,6 +17,17 @@ public record Word
             Tags = dto.Tags.Select(tagName => new Tag { Name = tagName, Color = string.Empty }).ToList()
         };
     }
+
+    public WordDto ToDto()
+    {
+        return new WordDto
+        {
+            Id = Id,
+            Original = Original,
+            Translation = Translation,
+            Tags = Tags.Select(t => t.Name).ToArray()
+        };
+    }
 }
 
 public record Tag

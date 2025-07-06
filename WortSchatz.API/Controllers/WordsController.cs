@@ -21,13 +21,7 @@ namespace WortSchatz.API.Controllers
         public async Task<ActionResult<IEnumerable<WordDto>>> GetWords()
         {
             var words = await _wordRepository.GetAllAsync();
-            var wordDtos = words.Select(w => new WordDto
-            {
-                Id = w.Id,
-                Original = w.Original,
-                Translation = w.Translation,
-                Tags = w.Tags.Select(t => t.Name).ToArray()
-            });
+            var wordDtos = words.Select(w => w.ToDto());
 
             return Ok(wordDtos);
         }
