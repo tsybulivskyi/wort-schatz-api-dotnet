@@ -24,10 +24,10 @@ jobs:
           dotnet-version: '9.0'
 
       - name: Build with dotnet
-        run: dotnet build WortSchatz.API/WortSchatz.API.csproj --configuration Release
+        run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish WortSchatz.API/WortSchatz.API.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -38,9 +38,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
       id-token: write #This is required for requesting the JWT
       contents: read #This is required for actions/checkout
@@ -54,9 +51,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B86601A8CF7F4D91A5C0109B5A9554EF }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_65799528BE7649CFBDB8618075674556 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_EF35E5E77EB547F385F6B301A97FAF2C }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_6B8865A36E824E6CAAE888F1296FECCB }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E6206F0AFE3842CAA43462E487CCD416 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_508866E26ED240449A2D4D98E6523326 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
