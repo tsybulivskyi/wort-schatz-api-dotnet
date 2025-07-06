@@ -24,10 +24,10 @@ jobs:
           dotnet-version: '9.0'
 
       - name: Build with dotnet
-        run: dotnet build WortSchatz.API.csproj --configuration Release
+        run: dotnet build WortSchatz.API\WortSchatz.API.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish WortSchatz.API.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish WortSchatz.API\WortSchatz.API.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
